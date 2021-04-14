@@ -28,18 +28,18 @@
       
       socket.on('qr', function(src) {
         $('#qrqode').attr('src', src);
-        console.logs('add qrhide - 1');
+        console.log('add qrhide - 1');
         
       })
       
       socket.on('ready', function(src) {
         $('#qrqode').hide();
-        console.logs('qrhide');
+        console.log('qrhide');
       })
       
       socket.on('authenticated', function(src) {
         $('#qrqode').hide();
-        console.logs('qrhide - 1');
+        console.log('qrhide - 1');
       })
       
     })
