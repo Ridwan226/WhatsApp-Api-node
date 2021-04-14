@@ -1,7 +1,9 @@
 const { Client } = require('whatsapp-web.js');
 const express = require('express');
 const socketIO = require('socket.io');
+const { body, validationResult } = require('express-validator');
 const fs = require('fs');
+const { phoneNumberFormat } = require('./helpers/formater');
 const http = require('http');
 const qrqode = require('qrcode');
 
@@ -23,7 +25,22 @@ app.get('/', (req, res) => {
   res.sendFile('index.html', { root: __dirname });
 })
 
-const client = new Client({ puppeteer: { headless: true }, session: sessionCfg });
+const client = new Client({
+  puppeteer: {
+    headless: true,
+    args: [
+        '--no-sandbox',
+        '--disable-setuid-sandbox',
+        '--disable-dev-shm-usage',
+        '--disable-accelerated-2d-canvas',
+        '--no-first-run',
+        '--no-zygote',
+        '--single-process',
+        '--disable-gpu'
+      ]
+    },
+    session: sessionCfg
+});
 
 
 
@@ -76,9 +93,35 @@ client.on('authenticated', (session) => {
 
 })
 
+const cekRegistrasiNumber = async function (number) {
+  const isRegisterd = await client.isRegisteredUser(number);
+  return isRegisterd;
+}
 
-app.post('/send-message', (req, res) => {
-  const number = req.body.number;
+app.post('/send-message', [
+  body('number').notEmpty(),
+  body('message').notEmpty(),
+], async (req, res) => {
+  
+  const error = validationResult(req).formatWith(({ msg }) => {
+    return msg;
+  });
+  
+  if (!error.isEmpty()) {
+    return res.status(422).json({
+      status: false,
+      message: error.mapped()
+    })
+  }
+  
+  const number = phoneNumberFormat(req.body.number);
+  
+  const isRegisterdNumber = await cekRegistrasiNumber(number);
+  
+  if (!isRegisterdNumber) {
+    return res.status(442).json({ status: false, message: 'Number Not Registered' });
+  }
+  
   const message = req.body.message;
   
   client.sendMessage(number, message).then(response => {
@@ -87,6 +130,8 @@ app.post('/send-message', (req, res) => {
     res.status(500).json({ status: false, response: err })
   });
 });
+
+//
 
 
 server.listen(8000, function () {
