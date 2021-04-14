@@ -6,6 +6,7 @@ const fs = require('fs');
 const { phoneNumberFormat } = require('./helpers/formater');
 const http = require('http');
 const qrqode = require('qrcode');
+const port = process.env.PORT || 8000;
 
 const app = express();
 const server = http.createServer(app);
@@ -134,6 +135,6 @@ app.post('/send-message', [
 //
 
 
-server.listen(8000, function () {
+server.listen(port, function () {
   console.log('app running on');
 })
