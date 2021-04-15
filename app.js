@@ -7,6 +7,7 @@ const {phoneNumberFormat} = require('./helpers/formater');
 const http = require('http');
 const qrqode = require('qrcode');
 const cors = require('cors');
+const router = express.Router();
 
 const port = process.env.PORT || 8000;
 
@@ -28,6 +29,19 @@ if (fs.existsSync(SESSION_FILE_PATH)) {
 
 app.get('/', (req, res) => {
   res.sendFile('index.html', {root: __dirname});
+});
+
+app.get('/logout', (req, res) => {
+  client.logout();
+  client.destroy();
+  client.initialize();
+  fs.unlinkSync(SESSION_FILE_PATH, function (err) {
+    if (err) return console.error(err);
+
+    console.log('session Deleted');
+  });
+
+  res.json({status: true, response: 'Success Logout'});
 });
 
 const client = new Client({
@@ -89,6 +103,21 @@ io.on('connection', function (socket) {
         console.error(err);
       }
     });
+  });
+
+  client.on('auth_failure', function (session) {
+    io.emit('message', {id: id, text: 'Auth Failur, restartting ..'});
+  });
+
+  client.on('disconnected', (reason) => {
+    io.emit('message', {id: id, text: 'Whats App is Disconected'});
+    fs.unlinkSync(SESSION_FILE_PATH, function (err) {
+      if (err) return console.error(err);
+
+      console.log('session Deleted');
+    });
+    client.destroy();
+    client.initialize();
   });
 });
 
