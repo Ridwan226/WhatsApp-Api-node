@@ -5,48 +5,13 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Wa Web</title>
-
-    <style>
-      .client {
-        border: 1px solid #ccc;
-        padding: 20px;
-        box-sizing: border-box;
-        display: inline-block;
-        margin: 10px;
-      }
-      .hide {
-        display: none;
-      }
-    </style>
   </head>
   <body>
     <div id="app">
-      <h1>Test Wa Web Ridwan Ganteng</h1>
-
-      <div class="form-content">
-        <label for="client-id">ID</label> <br />
-        <input type="text" id="client-id" placeholder="masukan id" /> <br />
-        <label for="client-desc">Description</label> <br />
-        <textarea
-          name="client-desc"
-          id="client-desc"
-          cols="30"
-          rows="10"
-          placeholder="Masukan Description"
-        ></textarea>
-        <br />
-        <button class="add-client-btn">Add Client</button>
-      </div>
-      <hr />
-      <div class="client-container">
-        <div class="client hide">
-          <h3 class="title"></h3>
-          <p class="description"></p>
-          <img src="" alt="QRCode" id="qrqode" />
-          <h3>Logs:</h3>
-          <ul class="logs" id="logs"></ul>
-        </div>
-      </div>
+      <h1>Power Wa</h1>
+      <img src="" alt="QRCode" id="qrqode" />
+      <h3>Logs:</h3>
+      <ul class="logs"></ul>
     </div>
 
     <script
@@ -63,48 +28,22 @@
       $(document).ready(function () {
         var socket = io();
 
-        // ketika button tambah di klik
-
-        $('.add-client-btn').click(function () {
-          var clientId = $('#client-id').val();
-          var clientDesc = $('#client-desc').val();
-
-          var template = $('.client')
-            .first()
-            .clone()
-            .removeClass('hide')
-            .addClass(clientId);
-          template.find('.title').html(clientId);
-          template.find('.description').html(clientDesc);
-
-          $('.client-container').append(template);
-
-          socket.emit('created-session', {
-            id: clientId,
-            description: clientDesc,
-          });
+        socket.on('message', function (msg) {
+          $('.logs').append($('<li>').text(msg));
         });
 
-        socket.on('message', function (data) {
-          $(`.client.${data.id} .logs`).append($('<li>').text(data.text));
-          console.log('Message', data);
-        });
-
-        socket.on('qr', function (data) {
-          $(`.client.${data.id} #qrqode`).attr('src', data.src);
-          $(`.client.${data.id} #qrqode`).show();
+        socket.on('qr', function (src) {
+          $('#qrqode').attr('src', src);
           console.log('add qrhide - 1');
-          console.log(data);
         });
 
-        socket.on('ready', function (data) {
-          $(`.client.${data.id} #qrqode`).hide();
-
+        socket.on('ready', function (src) {
+          $('#qrqode').hide();
           console.log('qrhide');
         });
 
-        socket.on('authenticated', function (data) {
-          $(`.client.${data.id} #qrqode`).hide();
+        socket.on('authenticated', function (src) {
+          $('#qrqode').hide();
           console.log('qrhide - 1');
         });
       });
