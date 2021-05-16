@@ -2,8 +2,7 @@ const {Client} = require('pg');
 // connectionString: process.env.DATABASE_URL,
 
 const client = new Client({
-  connectionString:
-    'postgres://fctldhhlrzglhr:867062fc286a4363b8a08455389aa6a5a6e109112719ef648c6aee2f7e0093b0@ec2-54-152-185-191.compute-1.amazonaws.com:5432/daibru5esc46m8',
+  connectionString: process.env.DATABASE_URL,
   ssl: {
     rejectUnauthorized: false,
   },
