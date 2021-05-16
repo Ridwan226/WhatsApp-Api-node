@@ -1,4 +1,4 @@
-const {Client} = require('whatsapp-web.js');
+const {Client, MessageMedia} = require('whatsapp-web.js');
 const express = require('express');
 const socketIO = require('socket.io');
 const {body, validationResult} = require('express-validator');
@@ -8,6 +8,7 @@ const http = require('http');
 const qrqode = require('qrcode');
 const cors = require('cors');
 const router = express.Router();
+const axios = require('axios');
 
 const port = process.env.PORT || 8000;
 
@@ -176,6 +177,46 @@ const db = require('./helpers/db');
         });
     },
   );
+
+  app.post('/send-media', async (req, res) => {
+    const number = phoneNumberFormat(req.body.number);
+    const caption = req.body.caption;
+    const fileUrl = req.body.file_url;
+
+    const isRegisterdNumber = await cekRegistrasiNumber(number);
+
+    if (!isRegisterdNumber) {
+      return res
+        .status(442)
+        .json({status: false, message: 'Number Not Registered'});
+    }
+
+    let mimetype;
+    const atacment = await axios
+      .get(fileUrl, {responseType: 'arraybuffer'})
+      .then((response) => {
+        mimetype = response.headers['content-type'];
+        return response.data.toString('base64');
+      })
+      .catch((err) => {
+        res.status(400).json({status: false, response: 'Format Image Fail'});
+      });
+
+    const media = new MessageMedia(mimetype, atacment, 'Media');
+
+    client
+      .sendMessage(number, media, {caption: caption})
+      .then((response) => {
+        res.status(200).json({status: true, response: response});
+      })
+      .catch((err) => {
+        res.status(500).json({status: false, response: err});
+      });
+  });
+
+  app.get('/send-refresh', (req, res) => {
+    res.json({status: true, response: 'Success Refresh'});
+  });
 
   //
 
