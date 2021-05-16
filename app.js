@@ -61,9 +61,9 @@ const client = new Client({
   session: sessionCfg,
 });
 
-client.on('ready', () => {
-  console.log('Client is ready!');
-});
+// client.on('ready', () => {
+//   console.log('Client is ready!');
+// });
 
 client.on('message', (msg) => {
   if (msg.body == '!ping') {
@@ -88,6 +88,7 @@ io.on('connection', function (socket) {
   });
 
   client.on('ready', () => {
+    console.log('ready bgt');
     socket.emit('ready', 'Wa Is Ready');
     socket.emit('message', 'Wa Is Ready');
   });
@@ -110,11 +111,10 @@ io.on('connection', function (socket) {
   });
 
   client.on('disconnected', (reason) => {
-    io.emit('message', {id: id, text: 'Whats App is Disconected'});
+    socket.emit('message', 'Whatsapp is disconnected!');
     fs.unlinkSync(SESSION_FILE_PATH, function (err) {
-      if (err) return console.error(err);
-
-      console.log('session Deleted');
+      if (err) return console.log(err);
+      console.log('Session file deleted!');
     });
     client.destroy();
     client.initialize();

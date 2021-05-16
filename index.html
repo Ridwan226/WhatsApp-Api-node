@@ -38,12 +38,12 @@
         });
 
         socket.on('ready', function (src) {
-          $('#qrqode').hide();
+          $('#qrqode').attr('src', '');
           console.log('qrhide');
         });
 
         socket.on('authenticated', function (src) {
-          $('#qrqode').hide();
+          $('#qrqode').attr('src', '');
           console.log('qrhide - 1');
         });
       });
