@@ -116,7 +116,7 @@ const db = require('./helpers/db');
     });
 
     client.on('auth_failure', function (session) {
-      io.emit('message', 'Auth Failur, restartting ..');
+      io.emit('message', 'Auth Failur, restartting wait 10 - 15 minute..');
       console.log('Auth Failur, restartting ..');
       db.removeSession();
 
