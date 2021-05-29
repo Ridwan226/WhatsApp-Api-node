@@ -118,6 +118,10 @@ const db = require('./helpers/db');
     client.on('auth_failure', function (session) {
       io.emit('message', 'Auth Failur, restartting ..');
       console.log('Auth Failur, restartting ..');
+      db.removeSession();
+
+      client.destroy();
+      client.initialize();
     });
 
     client.on('disconnected', (reason) => {
