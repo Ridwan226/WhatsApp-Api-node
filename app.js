@@ -50,6 +50,10 @@ const db = require('./helpers/db');
     res.json({status: true, response: 'Success Logout'});
   });
 
+  app.get('/refresh', (req, res) => {
+    res.json({status: true, response: 'Success Refresh'});
+  });
+
   const client = new Client({
     puppeteer: {
       headless: true,
