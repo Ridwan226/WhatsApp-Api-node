@@ -3,8 +3,7 @@ const {Client} = require('pg');
 
 // 'postgres://tjkyuiiiirxjdi:650dcf1a8e511ea500510b0b38e2eae58601d5c91d9340f1c77f22e876bde5f1@ec2-54-157-100-65.compute-1.amazonaws.com:5432/d14sifmb06c0u7';
 const client = new Client({
-  connectionString:
-    'postgres://tjkyuiiiirxjdi:650dcf1a8e511ea500510b0b38e2eae58601d5c91d9340f1c77f22e876bde5f1@ec2-54-157-100-65.compute-1.amazonaws.com:5432/d14sifmb06c0u7',
+  connectionString: process.env.DATABASE_URL,
   ssl: {
     rejectUnauthorized: false,
   },
